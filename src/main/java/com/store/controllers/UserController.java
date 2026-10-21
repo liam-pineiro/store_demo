@@ -22,6 +22,7 @@ import com.store.dtos.ChangePasswordRequest;
 import com.store.dtos.RegisterUserRequest;
 import com.store.dtos.UpdateUserRequest;
 import com.store.dtos.UserDto;
+import com.store.entities.Role;
 import com.store.mappers.UserMapper;
 import com.store.repositories.UserRepository;
 
@@ -71,6 +72,7 @@ public class UserController {
 		
 		var user = userMapper.toEntity(request);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setRole(Role.USER);
 		userRepository.save(user);
 		
 		var userDto = userMapper.toDto(user);
