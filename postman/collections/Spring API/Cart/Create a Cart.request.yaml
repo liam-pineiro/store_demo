@@ -1,0 +1,16 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/carts
+method: POST
+headers:
+  Authorization: "{{bearer_token_11g0}}"
+body:
+  type: json
+  content: ""
+scripts:
+  - type: afterResponse
+    code: "var json = pm.response.json();\r
+
+      pm.collectionVariables.set(\"cartId\", json.id);"
+    language: text/javascript
+order: 1000

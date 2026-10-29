@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/checkout
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: "{\r
+
+    \    \"cartId\": \"94187fd2-bdcd-4b65-a661-af46f7b47ab4\"   \r
+
+    }"
+order: 3000
