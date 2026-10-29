@@ -1,8 +1,7 @@
 package com.store.controllers;
 
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,13 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.store.dtos.CheckoutRequest;
 import com.store.dtos.CheckoutResponse;
-import com.store.entities.Order;
-import com.store.entities.OrderItem;
-import com.store.entities.OrderStatus;
-import com.store.repositories.CartRepository;
-import com.store.repositories.OrderRepository;
-import com.store.services.AuthService;
-import com.store.services.CartService;
+import com.store.dtos.ErrorDto;
+import com.store.exceptions.CartEmptyException;
+import com.store.exceptions.CartNotFoundException;
+import com.store.services.CheckoutService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,40 +21,15 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/checkout")
 public class CheckoutController {
-	private final CartRepository cartRepository;
-	private final AuthService authService;
-	private final OrderRepository orderRepository;
-	private final CartService cartService;
+	private final CheckoutService checkoutService;
 	
 	@PostMapping
-	public ResponseEntity<?> checkout(@Valid @RequestBody CheckoutRequest request){
-		var cart = cartRepository.getCartWithItems(request.getCartId()).orElse(null);
-		if(cart == null) {
-			return ResponseEntity.badRequest().body(Map.of("error", "Cart not found"));
-		}
-		
-		if(cart.getItems().isEmpty()) {
-			return ResponseEntity.badRequest().body(Map.of("error", "Cart is empty"));
-		}
-		
-		var order = new Order();
-		order.setTotalPrice(cart.getTotalPrice());
-		order.setStatus(OrderStatus.PENDING);
-		order.setCustomer(authService.getCurrentUser());
-		
-		cart.getItems().forEach(item -> {
-			var orderItem = new OrderItem();
-			orderItem.setOrder(order);
-			orderItem.setProduct(item.getProduct());
-			orderItem.setQuantity(item.getQuantity());
-			orderItem.setTotalPrice(item.getTotalPrice());
-			orderItem.setUnitPrice(item.getProduct().getPrice());
-			order.getItems().add(orderItem);
-		});
-		
-		orderRepository.save(order);
-		cartService.clearCart(cart.getId());
-		
-		return ResponseEntity.ok(new CheckoutResponse(order.getId()));
+	public CheckoutResponse checkout(@Valid @RequestBody CheckoutRequest request){
+		return checkoutService.checkout(request);
+	}
+	
+	@ExceptionHandler({CartNotFoundException.class, CartEmptyException.class})
+	public ResponseEntity<ErrorDto> handleException(Exception e){
+		return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
 	}
 }

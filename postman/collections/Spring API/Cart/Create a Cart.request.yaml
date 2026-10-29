@@ -3,7 +3,7 @@ description: ""
 url: http://localhost:8080/carts
 method: POST
 headers:
-  Authorization: "{{bearer_token_11g0}}"
+  Authorization: Bearer {{accessToken}}
 body:
   type: json
   content: ""

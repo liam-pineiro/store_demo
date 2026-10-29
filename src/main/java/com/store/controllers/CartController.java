@@ -1,6 +1,5 @@
 package com.store.controllers;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -19,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.store.dtos.AddItemToCartRequest;
 import com.store.dtos.CartDto;
 import com.store.dtos.CartItemDto;
+import com.store.dtos.ErrorDto;
 import com.store.dtos.UpdateCartItemRequest;
 import com.store.exceptions.CartNotFoundException;
 import com.store.exceptions.ProductNotFoundException;
@@ -80,13 +80,13 @@ public class CartController {
 	}
 	
 	@ExceptionHandler(CartNotFoundException.class)
-	public ResponseEntity<Map<String, String>> handleCartNotFound(){
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Cart was not found."));
+	public ResponseEntity<ErrorDto> handleCartNotFound(){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto("Cart was not found."));
 	}
 	
 	@ExceptionHandler(ProductNotFoundException.class)
-	public ResponseEntity<Map<String, String>> handleProductNotFound(){
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Product was not found in the cart."));
+	public ResponseEntity<ErrorDto> handleProductNotFound(){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDto("Product was not found in the cart."));
 	}	
 }
 	

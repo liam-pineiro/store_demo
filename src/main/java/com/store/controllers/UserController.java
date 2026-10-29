@@ -1,6 +1,5 @@
 package com.store.controllers;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.domain.Sort;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.store.dtos.ChangePasswordRequest;
+import com.store.dtos.ErrorDto;
 import com.store.dtos.RegisterUserRequest;
 import com.store.dtos.UpdateUserRequest;
 import com.store.dtos.UserDto;
@@ -40,7 +40,6 @@ public class UserController {
 	@GetMapping
 	public Iterable<UserDto> getAllUsers(
 			@RequestParam(required = false, defaultValue = "", name = "sort") String sort){
-		
 		if(!Set.of("name", "email").contains(sort)) {
 			sort = "name";
 		}
@@ -62,12 +61,11 @@ public class UserController {
 	
 	@PostMapping
 	public ResponseEntity<?> registerUser(
-			
 			@Valid @RequestBody RegisterUserRequest request, 
 			UriComponentsBuilder uriBuilder) {
 		
 		if(userRepository.existsByEmail(request.getEmail())) {
-			return ResponseEntity.badRequest().body(Map.of("email", "Email has already been registered."));
+			return ResponseEntity.badRequest().body(new ErrorDto("Email has already been registered."));
 		}
 		
 		var user = userMapper.toEntity(request);

@@ -3,12 +3,8 @@ description: ""
 url: http://localhost:8080/carts/{{cartId}}/items
 method: POST
 headers:
-  Authorization: "{{bearer_token_0h69}}"
+  Authorization: Bearer {{accessToken}}
 body:
   type: json
-  content: "{\r
-
-    \    \"productId\": {{productId}}\r
-
-    }"
+  content: "{\r\n    \"productId\": 2\r\n}"
 order: 2000
